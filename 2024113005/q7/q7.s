@@ -9,7 +9,8 @@ false_msg:  .string "FALSE\n"
 main:
 addi sp , sp , -16
 sd ra , 0(sp)
-addi a0  , sp , 8
+la a0 , input_fmt
+addi a1  , sp , 8
 call scanf 
 ld s0 , 8(sp) #s0 = N 
 addi t0 , s0 , 0 #t0 = N , copy for cal
