@@ -1,83 +1,63 @@
 .data 
-input_ar:   .space  800000
-input_arr:  .string "%lld"
 input_fmt:  .string "%lld"
 true_msg:   .string "TRUE\n"
-false_msg:  .string "FALSE\n" 
-
+false_msg:  .string "FALSE\n"
 
 .text
 .globl main 
 
 main:
-addi sp , sp , -16
+addi sp , sp , -80
 sd ra , 0(sp)
-addi a0  , sp , 8
-call scanf 
 
-ld s0 , 8(sp) #s0 = N 
-addi t0 , s0 , 0 #t0 = N , copy for cal
+# input n
+la a0 , input_fmt
+addi a1 , sp , 8
+call scanf
 
-li t1 , 0 #i = 0 
-la a0 , input_arr
+ld s0 , 8(sp) #s0 = n 
 
-#read_arr:
-#beq t1 , s0 ,calculation
-#la a1 ,input_arr
-#slli t1 , t1 , 3#add t3 , t1 , a1
-#la a2 , t3 
-#call scanf
-#ld t4 , 0(t3) 
-#addi t1 , t1 , 1 #i++ 
-#j read_arr 
+li t0 , 0 #i = 0
+addi s1 , sp , 16 #array base address
 
+input_array:
+beq t0 , s0 , initialization
 
-#calculation:
-#ld t1 , 0(t3) 
-andi t5 , t1 , 1 
-beqz t5 , even_odd 
+la a0 , input_fmt
+slli t1 , t0 , 3
+add a1 , s1 , t1
+call scanf
+addi t0 , t0 , 1
+j input_array
 
-li t1 , 0 #i = 0 
+initialization:
+li t0 , 0 #i = 0
+li t6 , 2
 
-odd_even:
-beq t1 , s0 ,yes 
+logic:
+addi t1 , s0 , -1
+beq t0 , t1 , yes
 
-odd:
-ld t2 , 0(t3)
-addi t1 , t1 , 1 
-andi t3 , t2 ,1 
-beqz t3 , no
+slli t2 , t0 , 3
+add t3 , s1 , t2
+ld t4 , 0(t3) #arr[i]
 
-even:
-li t6 , 1
-ld t2 , 0(t3)
-addi t1 , t1 , 1 
-andi t3 , t2 ,1 
-beq t3 , t6 , no
-j odd_even 
+addi t2 , t2 , 8
+add t3 , s1 , t2
+ld t5 , 0(t3) #arr[i+1]
 
+rem t2 , t4 , t6 #parity of arr[i]
+rem t3 , t5 , t6 #parity of arr[i+1]
 
-even_odd:
-beq t1 , s0 , yes
-even1:
-li t6 , 1
-ld t2 , 0(t3)
-addi t1 , t1 , 1 
-andi t3 , t2 ,1 
-beq t3 , t6 , no
+beq t2 , t3 , no
 
-odd1:
-ld t2 , 0(t3)
-addi t1 , t1 , 1 
-andi t3 , t2 ,1 
-beqz t3 , no
-j even_odd
-
+addi t0 , t0 , 1
+j logic
 
 no:
 la a0 , false_msg
 call printf
-j exit 
+j exit
 
 yes:
 la a0 , true_msg
@@ -85,6 +65,6 @@ call printf
 
 exit:
 ld ra , 0(sp)
-addi sp , sp  ,16
-li a0 , 0 
-ret 
+addi sp , sp , 80
+li a0 , 0
+ret
